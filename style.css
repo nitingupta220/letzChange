@@ -1,0 +1,35 @@
+.form-control {
+    width: 40%;
+    margin: auto;
+    transition: width 0.8s ease-in-out;
+    text-align: center;
+    border-radius: 0px;
+}
+.form-control:focus {
+    width: 50%;
+    border-color: #f1b287;
+}
+.btn-success {
+    border: none;
+    background-color: tomato;
+    width: 20%;
+    border-radius: 0px;
+    font-size: 20px;
+    border-color: tomato;
+}
+.btn-success:focus {
+    border-color: tomato;
+    background-color: tomato;
+    box-shadow: none;
+}
+.btn-success:hover {
+    border-color: tomato;
+    background-color: tomato;
+}
+.btn-success:active {
+    border-color: tomato !important;
+    background-color: tomato !important;
+}
+.col-6 {
+    padding: 20px;
+}

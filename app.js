@@ -12,6 +12,11 @@ app.controller('youtubePlayerController', function ($scope, $http) {
 
         }
     ];
+    $scope.addVideo = function (url) {
+        $scope.videos.push({
+            url: $scope.videoInput
+        })
+    }
 });
 
 app.filter('trusted', ['$sce', function ($sce) {
