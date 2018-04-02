@@ -16,6 +16,7 @@ app.controller('youtubePlayerController', function ($scope, $http) {
         $scope.videos.push({
             url: $scope.videoInput
         })
+        $scope.videoInput = '';
     }
 });
 
