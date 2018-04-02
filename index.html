@@ -37,24 +37,73 @@
 
     <!--    <iframe ng-src="{{video | trusted}}" frameborder="0" width="420" height="315" allowfullscreen></iframe>-->
     <div class="container-fluid text-center">
-        <div class="container">
-            <div class="jumbotron">
-                <input type="text" ng-model="videoInput" class="form-control">
-                <br>
-                <button ng-click="addVideo()" class="btn btn-success">Add Video</button>
-            </div>
-            <div class="container">
-               
-
-                    <div class="row">
-                        <div class="col-6"  ng-repeat="video in videos"><iframe ng-src="{{video.url | trusted}}" frameborder="0" allowfullscreen></iframe></div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-6">
+                    <div class="jumbotron">
+                        <form ng-submit="search(true)">
+                            <input type="text" ng-model="query" class="form-control">
+                        </form>
+                        <br>
+                        <button class="btn btn-success">Search Video</button>
                     </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-6" ng-repeat="video in results track by $index" ng-click="modal.show(); launch(video, true)">
+                                <div class="well">
+                                    <img ng-src="{{ video.thumbnail }}" style="float: left;">
+                                    <h5>{{video.title}}</h5>
+                                    <p>{{video.description}}</p>
+                                </div>
+                            </div>
+                        </div>
 
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="jumbotron">
+                        <input type="text" ng-model="videoInput" class="form-control">
+                        <br>
+                        <button ng-click="addVideo()" class="btn btn-success">Add Video</button>
+                    </div>
+                    <div class="container">
+                        <div id="player">
+                            <div id="placeholder" style="width: 100%;height: 400px;"></div>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12" ng-repeat="video in videos track by $index">
+                                <iframe ng-src="{{video.url | trusted}}" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    <!-- /.container -->
 
+
+
+
+
+        </div>
+    </div>
+    <!-- /.container -->
+    <!--
+    <div class="left">
+        <img class="thumbnail" >
+    </div>
+    <div class="center">
+        <div class="title">
+            {{ video.title }}
+        </div>
+        <div class="user">
+            <ons-icon icon="fa-user"></ons-icon><span style="font-size: 12px"> {{ video.author ? video.author : "Anonymous" }}</span>
+        </div>
+        <div class="desc">
+            {{ video.description }}
+        </div>
+    </div>
+-->
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
