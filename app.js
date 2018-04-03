@@ -19,28 +19,20 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
     function init() {
         $scope.youtube = VideosService.getYoutube();
         $scope.results = VideosService.getResults();
-        $scope.history = VideosService.getHistory();
+        $scope.videos = VideosService.getVideos();
+//        $scope.history = VideosService.getHistory();
+        $scope.playlist = true;
     }
 
 
-    $scope.videos = [{
-            'url': 'https://www.youtube.com/watch?v=MDFm7jl1WMk',
-            'id': 1
-
-    },
-        {
-            'url': 'https://www.youtube.com/watch?v=8mweiZlvxsE',
-            'id': 2
-
-        }
-        ];
-
-    $scope.addVideo = function (url) {
-        $scope.videos.push({
-            url: $scope.videoInput
-        });
-        $scope.videoInput = '';
-    };
+//    $scope.addVideo = function (url) {
+//        $scope.videos.push({
+//            url: $scope.videoInput
+//        });
+//        $scope.videoInput = '';
+//    };
+    
+    
     $scope.search = function (isNewQuery) {
         $scope.loading = true;
         $http.get('https://www.googleapis.com/youtube/v3/search', {
@@ -80,6 +72,12 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
         }
         $log.info('Launched id:' + video.id + ' and title:' + video.title);
     };
+
+    $scope.queue = function (id, title) {
+        VideosService.queueVideo(id, title);
+//        VideosService.deleteVideo($scope.history, id);
+        $log.info('Queued id:' + id + ' and title:' + title);
+    };
 });
 
 
@@ -97,6 +95,18 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
         playerWidth: '100%',
         state: 'stopped'
     };
+
+    var videos = [{
+            id: 'kRJuY6ZDLPo',
+            title: 'La Roux - In for the Kill (Twelves Remix)'
+        },
+        {
+            id: '45YSGFctLws',
+            title: 'Shout Out Louds - Illusions'
+        }
+        ];
+
+
     var results = [];
     var history = [];
 
@@ -107,6 +117,20 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
         service.loadPlayer();
         $rootScope.$apply();
     };
+
+    function onYoutubeStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING) {
+            youtube.state = 'playing';
+        } else if (event.data == YT.PlayerState.PAUSED) {
+            youtube.state = 'paused';
+        } else if (event.data == YT.PlayerState.ENDED) {
+            youtube.state = 'ended';
+            service.launchPlayer(videos[0].id, videos[0].title);
+            service.archiveVideo(videos[0].id, videos[0].title);
+//            service.deleteVideo(videos, videos[0].id);
+        }
+        $rootScope.$apply();
+    }
 
     this.bindPlayer = function (elementId) {
         $log.info('Binding to ' + elementId);
@@ -170,11 +194,24 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
         return results;
     };
 
-    this.getHistory = function () {
-        return history;
+//    this.getHistory = function () {
+//        return history;
+//    };
+
+    this.getVideos = function () {
+        return videos;
+    };
+
+    this.queueVideo = function (id, title) {
+        videos.push({
+            id: id,
+            title: title
+        });
+        return videos;
     };
 
 }]);
+
 app.filter('trusted', ['$sce', function ($sce) {
     return function (url) {
         var video_id = url.split('v=')[1].split('&')[0];
