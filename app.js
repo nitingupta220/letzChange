@@ -72,20 +72,24 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
     };
 
     //    Play the clicked video
-    $scope.launch = function (video, archive) {
-        VideosService.launchPlayer(video.id, video.title);
-        if (archive) {
-            VideosService.archiveVideo(video);
-        }
-        $log.info('Launched id:' + video.id + ' and title:' + video.title);
+    $scope.launch = function (id, title) {
+        VideosService.launchPlayer(id, title);
+        VideosService.archiveVideo(id, title);
+        VideosService.deleteVideo($scope.videos, id);
+        $log.info('Launched id:' + id + ' and title:' + title);
     };
 
     //    adding the video to the queue
     $scope.queue = function (id, title) {
         VideosService.queueVideo(id, title);
-        //        VideosService.deleteVideo($scope.history, id);
+        VideosService.deleteVideo($scope.videos[0], id);
         $log.info('Queued id:' + id + ' and title:' + title);
     };
+
+    $scope.delete = function (list, id) {
+        VideosService.deleteVideo(list, id);
+    };
+
 });
 
 
@@ -121,7 +125,6 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
 
 
     var results = [];
-    var history = [];
 
 
 
@@ -133,13 +136,19 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
             youtube.state = 'paused';
         } else if (event.data == YT.PlayerState.ENDED) {
             youtube.state = 'ended';
-            service.launchPlayer(videos[0].id, videos[0].title);
-            service.archiveVideo(videos[0].id, videos[0].title);
-            //            service.deleteVideo(videos, videos[0].id);
+            service.launchPlayer(videos[1].id, videos[1].title);
+            //            service.archiveVideo(videos[0].id, videos[0].title);
+            service.deleteVideo(videos, videos[0].id);
         }
         $rootScope.$apply();
     }
 
+    function onYoutubeReady(event) {
+        $log.info('YouTube Player is ready');
+        youtube.player.cueVideoById(videos[0].id);
+        youtube.videoId = videos[0].id;
+        youtube.videoTitle = videos[0].title;
+    }
 
     //    Binding the player to the HTML element
     this.bindPlayer = function (elementId) {
@@ -157,6 +166,10 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
             playerVars: {
                 rel: 0,
                 showinfo: 0
+            },
+            events: {
+                'onReady': onYoutubeReady,
+                'onStateChange': onYoutubeStateChange
             }
         });
     };
@@ -203,10 +216,10 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
         return results;
     }
 
-    this.archiveVideo = function (video) {
-        history.unshift(video);
-        return history;
-    };
+    //    this.archiveVideo = function (video) {
+    //        history.unshift(video);
+    //        return history;
+    //    };
 
     this.getYoutube = function () {
         return youtube;
@@ -216,9 +229,6 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
         return results;
     };
 
-    //    this.getHistory = function () {
-    //        return history;
-    //    };
 
     //    return the videos object which we can use in our controller to display the videos in the HTML
     this.getVideos = function () {
@@ -233,6 +243,15 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
             title: title
         });
         return videos;
+    };
+
+    this.deleteVideo = function (list, id) {
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].id === id) {
+                list.splice(i, 1);
+                break;
+            }
+        }
     };
 
 }]);
