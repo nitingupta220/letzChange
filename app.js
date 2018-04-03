@@ -1,5 +1,7 @@
 var app = angular.module('youtubePlayer', []);
 
+
+//Loading the youtube Iframe to play the video
 app.run(function () {
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
@@ -11,6 +13,9 @@ app.config(function ($httpProvider) {
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
 });
 
+
+//Controller for the application
+
 app.controller('youtubePlayerController', function ($scope, $http, $window, $log, VideosService) {
     'use strict';
 
@@ -20,19 +25,20 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
         $scope.youtube = VideosService.getYoutube();
         $scope.results = VideosService.getResults();
         $scope.videos = VideosService.getVideos();
-//        $scope.history = VideosService.getHistory();
+        //        $scope.history = VideosService.getHistory();
         $scope.playlist = true;
     }
 
 
-//    $scope.addVideo = function (url) {
-//        $scope.videos.push({
-//            url: $scope.videoInput
-//        });
-//        $scope.videoInput = '';
-//    };
-    
-    
+    //    $scope.addVideo = function (url) {
+    //        $scope.videos.push({
+    //            url: $scope.videoInput
+    //        });
+    //        $scope.videoInput = '';
+    //    };
+
+
+    //    making the AJAX request to the youtube api and get the data
     $scope.search = function (isNewQuery) {
         $scope.loading = true;
         $http.get('https://www.googleapis.com/youtube/v3/search', {
@@ -65,6 +71,7 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
             });
     };
 
+    //    Play the clicked video
     $scope.launch = function (video, archive) {
         VideosService.launchPlayer(video.id, video.title);
         if (archive) {
@@ -73,13 +80,16 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
         $log.info('Launched id:' + video.id + ' and title:' + video.title);
     };
 
+    //    adding the video to the queue
     $scope.queue = function (id, title) {
         VideosService.queueVideo(id, title);
-//        VideosService.deleteVideo($scope.history, id);
+        //        VideosService.deleteVideo($scope.history, id);
         $log.info('Queued id:' + id + ' and title:' + title);
     };
 });
 
+
+//Service which will provide the basic functionalities like getting the predefined playlist, adding a new video
 
 app.service('VideosService', ['$window', '$rootScope', '$log', function ($window, $rootScope, $log) {
 
@@ -96,6 +106,7 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
         state: 'stopped'
     };
 
+    //    videos already in the playlist
     var videos = [{
             id: 'kRJuY6ZDLPo',
             title: 'La Roux - In for the Kill (Twelves Remix)'
@@ -110,13 +121,8 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
     var results = [];
     var history = [];
 
-    $window.onYouTubeIframeAPIReady = function () {
-        $log.info('Youtube API is ready');
-        youtube.ready = true;
-        service.bindPlayer('placeholder');
-        service.loadPlayer();
-        $rootScope.$apply();
-    };
+
+
 
     function onYoutubeStateChange(event) {
         if (event.data == YT.PlayerState.PLAYING) {
@@ -127,16 +133,20 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
             youtube.state = 'ended';
             service.launchPlayer(videos[0].id, videos[0].title);
             service.archiveVideo(videos[0].id, videos[0].title);
-//            service.deleteVideo(videos, videos[0].id);
+            //            service.deleteVideo(videos, videos[0].id);
         }
         $rootScope.$apply();
     }
 
+
+    //    Binding the player to the HTML element
     this.bindPlayer = function (elementId) {
         $log.info('Binding to ' + elementId);
         youtube.playerId = elementId;
     };
 
+
+    //    Creating the actual youtube player using the youtube API
     this.createPlayer = function () {
         $log.info('Creating a new Youtube player for DOM id ' + youtube.playerId + ' and video ' + youtube.videoId);
         return new YT.Player(youtube.playerId, {
@@ -158,6 +168,17 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
         }
     };
 
+    //    Creating the onYouTubeIframeAPIReady function which will call the previous two functions
+
+    $window.onYouTubeIframeAPIReady = function () {
+        $log.info('Youtube API is ready');
+        youtube.ready = true;
+        service.bindPlayer('placeholder');
+        service.loadPlayer();
+        $rootScope.$apply();
+    };
+
+    //launch the video in the player when you click on the Play button
     this.launchPlayer = function (id, title) {
         youtube.player.loadVideoById(id);
         youtube.videoId = id;
@@ -194,14 +215,17 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
         return results;
     };
 
-//    this.getHistory = function () {
-//        return history;
-//    };
+    //    this.getHistory = function () {
+    //        return history;
+    //    };
 
+//    return the videos object which we can use in our controller to display the videos in the HTML
     this.getVideos = function () {
         return videos;
     };
 
+    
+//    adding the video to the playlist
     this.queueVideo = function (id, title) {
         videos.push({
             id: id,
@@ -212,6 +236,7 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
 
 }]);
 
+//Creating an sce filter which will help to display the trusted content
 app.filter('trusted', ['$sce', function ($sce) {
     return function (url) {
         var video_id = url.split('v=')[1].split('&')[0];
