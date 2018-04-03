@@ -108,12 +108,14 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
 
     //    videos already in the playlist
     var videos = [{
-            id: 'kRJuY6ZDLPo',
-            title: 'La Roux - In for the Kill (Twelves Remix)'
+            id: 'YykjpeuMNEk',
+            title: 'Coldplay - Hymn For The Weekend (Official Video)'
+
         },
         {
-            id: '45YSGFctLws',
-            title: 'Shout Out Louds - Illusions'
+            id: 'FM7MFYoylVs',
+            title: 'The Chainsmokers & Coldplay - Something Just Like This (Lyric)'
+
         }
         ];
 
@@ -169,7 +171,6 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
     };
 
     //    Creating the onYouTubeIframeAPIReady function which will call the previous two functions
-
     $window.onYouTubeIframeAPIReady = function () {
         $log.info('Youtube API is ready');
         youtube.ready = true;
@@ -219,13 +220,13 @@ app.service('VideosService', ['$window', '$rootScope', '$log', function ($window
     //        return history;
     //    };
 
-//    return the videos object which we can use in our controller to display the videos in the HTML
+    //    return the videos object which we can use in our controller to display the videos in the HTML
     this.getVideos = function () {
         return videos;
     };
 
-    
-//    adding the video to the playlist
+
+    //    adding the video to the playlist
     this.queueVideo = function (id, title) {
         videos.push({
             id: id,
