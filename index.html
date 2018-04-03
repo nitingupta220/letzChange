@@ -56,8 +56,8 @@
                     </div>
                     <div class="container">
                         <div class="row">
-                            <div class="col-12" ng-repeat="video in videos track by $index" ng-click="launch(video, true);">
-                                {{video.title}}
+                            <div class="col-12 playlist" ng-repeat="video in videos track by $index" >
+                                {{video.title}} <span><button ng-click="launch(video, true);" class="btn btn-info">Play</button></span>
                             </div>
                         </div>
                     </div>

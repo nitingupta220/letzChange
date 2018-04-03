@@ -33,3 +33,10 @@
 .col-6 {
     padding: 20px;
 }
+.playlist {
+    margin: 20px;
+    font-size: 20px;
+}
+.btn-info {
+    float: right;
+}
