@@ -16,15 +16,15 @@ app.config(function ($httpProvider) {
 
 //Controller for the application
 
-app.controller('youtubePlayerController', function ($scope, $http, $window, $log, VideosService) {
+app.controller('youtubePlayerController', function ($scope, $http, $window, $log, playerService) {
     'use strict';
 
     init();
 
     function init() {
-        $scope.youtube = VideosService.getYoutube();
-        $scope.results = VideosService.getResults();
-        $scope.videos = VideosService.getVideos();
+        $scope.youtube = playerService.getYoutube();
+        $scope.results = playerService.getResults();
+        $scope.videos = playerService.getVideos();
         $scope.playlist = true;
     }
 
@@ -58,7 +58,7 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
                 if (data.data.items.length) {
                     $scope.label = 'No results were found!';
                 }
-                VideosService.listResults(data, $scope.nextPageToken && !isNewQuery);
+                playerService.listResults(data, $scope.nextPageToken && !isNewQuery);
                 $scope.nextPageToken = data.nextPageToken;
                 $log.info(data);
             })
@@ -66,21 +66,21 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
 
     //    Play the clicked video
     $scope.launch = function (id, title) {
-        VideosService.launchPlayer(id, title);
-        VideosService.archiveVideo(id, title);
-        VideosService.deleteVideo($scope.videos, id);
+        playerService.launchPlayer(id, title);
+        playerService.archiveVideo(id, title);
+        playerService.deleteVideo($scope.videos, id);
         $log.info('Launched id:' + id + ' and title:' + title);
     };
 
     //    adding the video to the queue
     $scope.queue = function (id, title) {
-        VideosService.queueVideo(id, title);
-        VideosService.deleteVideo($scope.videos[0], id);
+        playerService.queueVideo(id, title);
+        playerService.deleteVideo($scope.videos[0], id);
         $log.info('Queued id:' + id + ' and title:' + title);
     };
 
     $scope.delete = function (list, id) {
-        VideosService.deleteVideo(list, id);
+        playerService.deleteVideo(list, id);
     };
 
 });
@@ -88,7 +88,7 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
 
 //Service which will provide the basic functionalities like getting the predefined playlist, adding a new video
 
-app.service('VideosService', ['$window', '$rootScope', '$log', function ($window, $rootScope, $log) {
+app.service('playerService', ['$window', '$rootScope', '$log', function ($window, $rootScope, $log) {
 
     var service = this;
 

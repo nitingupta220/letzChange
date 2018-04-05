@@ -36,6 +36,8 @@
 .playlist {
     margin: 20px;
     font-size: 20px;
+    text-align: left;
+    width: 100%;
 }
 .btn-info {
     float: right;
