@@ -25,7 +25,6 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
         $scope.youtube = VideosService.getYoutube();
         $scope.results = VideosService.getResults();
         $scope.videos = VideosService.getVideos();
-        //        $scope.history = VideosService.getHistory();
         $scope.playlist = true;
     }
 
@@ -62,13 +61,7 @@ app.controller('youtubePlayerController', function ($scope, $http, $window, $log
                 VideosService.listResults(data, $scope.nextPageToken && !isNewQuery);
                 $scope.nextPageToken = data.nextPageToken;
                 $log.info(data);
-            }), (function () {
-                $log.info('Search error');
-            }), (function () {
-                $scope.loadMoreButton.stopSpin();
-                $scope.loadMoreButton.setDisabled(false);
-                $scope.loading = false;
-            });
+            })
     };
 
     //    Play the clicked video
